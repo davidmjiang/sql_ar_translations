@@ -1,3 +1,5 @@
+##SQL to AR
+
 1.
 ```sql
 SELECT *
@@ -86,4 +88,105 @@ User.select("count(*)").group(:favorite_color).having("count(*) > 1")
 * all posts sorted in descending order by date created
 ```
 Post.order(created_at: desc)
+```
+
+##AR to SQL
+1. Post.all
+```
+SELECT * FROM posts
+
+2. Post.first
+```
+SELECT * FROM posts LIMIT 1
+```
+
+
+3. Post.last
+```
+  SELECT * FROM post ORDER BY id DESC LIMIT 1
+```
+4. Post.where(:id => 4)
+```
+SELECT * FROM posts
+WHERE id = 4
+```
+
+5. Post.find(4)
+```
+SELECT * FROM posts
+WHERE id = 4
+```
+
+6. User.count
+```
+SELECT COUNT(*)
+FROM posts
+```
+
+7. Post.select(:name).where(:created_at > 3.days.ago).order(:created_at)
+```
+SELECT name
+FROM posts
+WHERE (GETDATE() - created_at) > 3
+ORDER BY created_at
+```
+
+8. Post.select("COUNT(*)").group(:category_id)
+```
+SELECT COUNT(*)
+FROM posts
+GROUP BY category_id
+```
+
+9. All posts created before 2014
+```
+SELECT *
+FROM posts
+WHERE created_at < 2014
+```
+
+10. A list of all (unique) first names for authors who have written at least 3 posts
+```
+SELECT DISTINCT users.first_name
+FROM
+  users
+JOIN
+  posts
+ON
+  posts.author_id = users.id
+GROUP BY author_id
+HAVING COUNT(*) > 3
+```
+
+11. The posts with titles that start with the word "The"
+```
+SELECT *
+FROM posts
+WHERE title LIKE 'The%'
+```
+
+12. Posts with IDs of 3,5,7, and 9
+```
+SELECT *
+FROM posts
+WHERE id IN (3, 5, 7, 9)
+```
+
+##Custom Queries
+1. Which author has written the most posts?
+SQL
+```
+SELECT users.first_name, COUNT(*) AS count
+FROM
+  users
+JOIN
+  posts
+ON
+  posts.author_id = users.id
+GROUP BY author_id
+HAVING count = MAX(count)
+```
+AR
+```
+Post.joins(JOIN users ON posts.author_id = users.id).select("users.first_name, COUNT(*) AS count").group(:author_id).having("count = MAX(count)")
 ```

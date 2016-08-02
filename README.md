@@ -190,3 +190,39 @@ AR
 ```
 Post.joins(JOIN users ON posts.author_id = users.id).select("users.first_name, COUNT(*) AS count").group(:author_id).having("count = MAX(count)")
 ```
+
+2. How many posts were created in 2010?
+SQL
+```
+SELECT COUNT(*) 
+FROM posts
+WHERE year = 2010
+
+```
+AR
+```
+Post.select("COUNT(*)").where("year = 2010")
+
+```
+
+3. Which category has the least posts?
+SQL
+```
+SELECT category_id, COUNT(*) AS count
+FROM posts
+GROUP BY category_id
+ORDER BY count
+LIMIT 1
+
+```
+AR
+```
+Post.select("category_id, COUNT(*) AS count").group(:category_id)
+.order(:count).limit(1) 
+
+
+
+
+
+
+
